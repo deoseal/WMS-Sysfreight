@@ -35,10 +35,11 @@ appControllers.controller( 'PutawayListCtrl', [
                 objUri.addSearch( 'StoreNo', imgr2.StoreNo );
                 objUri.addSearch( 'TrxNo', imgr2.TrxNo );
                 objUri.addSearch( 'LineItemNo', imgr2.LineItemNo );
+                objUri.addSearch( 'UserID', sessionStorage.getItem('UserId').toString() );
                 ApiService.Get( objUri, false ).then( function success( result ) {} );
             }
             $ionicLoading.hide();
-            PopupService.Info( popup, 'Comfirm Success' ).then( function () {
+            PopupService.Info( popup, 'Confirm Success' ).then( function () {
                 $scope.clearImgr();
                 $scope.returnMain();
             } );
@@ -69,7 +70,7 @@ appControllers.controller( 'PutawayListCtrl', [
         $scope.refreshGrnNos = function ( Grn ) {
             if ( is.not.undefined( Grn ) && is.not.empty( Grn ) ) {
                 var objUri = ApiService.Uri( true, '/api/wms/imgr1' );
-                objUri.addSearch( 'StatusCode', 'EXE' );
+                objUri.addSearch( 'StatusCode', 'USE' );
                 objUri.addSearch( 'GoodsReceiptNoteNo', Grn );
                 ApiService.Get( objUri, false ).then( function success( result ) {
                     $scope.GrnNos = result.data.results;
@@ -81,7 +82,7 @@ appControllers.controller( 'PutawayListCtrl', [
         $scope.showImgr1 = function ( Customer ) {
             if ( is.not.undefined( Customer ) && is.not.empty( Customer ) ) {
                 var objUri = ApiService.Uri( true, '/api/wms/imgr1' );
-                objUri.addSearch( 'StatusCode', 'EXE' );
+                objUri.addSearch( 'StatusCode', 'USE' );
                 objUri.addSearch( 'CustomerCode', Customer );
                 ApiService.Get( objUri, true ).then( function success( result ) {
                     $scope.Imgr1s = result.data.results;

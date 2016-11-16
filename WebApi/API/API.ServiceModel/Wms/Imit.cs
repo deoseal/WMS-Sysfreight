@@ -82,7 +82,9 @@ namespace WebApi.ServiceModel.Wms
             {
                 using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
                 {
-                    string strSql = "EXEC spi_Imit_Confirm " + int.Parse(request.TrxNo) + ",'" + request.UpdateBy + "'";
+            
+                    //string strSql = "EXEC spi_Imit_Confirm " + int.Parse(request.TrxNo) + ",'" + request.UpdateBy + "'"; 'yicong 20161019
+                   string  strSql = "Update Imit1 set StatusCode='EXE',UpdateBy='"+request.UpdateBy +"' where TrxNo='"+request.TrxNo+"' ";
                     Result = db.SqlScalar<int>(strSql);
                 }
             }
@@ -92,7 +94,7 @@ namespace WebApi.ServiceModel.Wms
         public int Insert_Imit2(Imit request)
         {
             int Result = -1;
-            Result = Insert_Imit2Detail(int.Parse(request.Impm1TrxNo), int.Parse(request.TrxNo), int.Parse(request.LineItemNo), int.Parse(request.Qty), request.NewStoreNo, request.UpdateBy);
+            //Result = Insert_Imit2Detail(int.Parse(request.Impm1TrxNo), int.Parse(request.TrxNo), int.Parse(request.LineItemNo), int.Parse(request.Qty), request.NewStoreNo, request.UpdateBy);
             return Result;
         }
 
@@ -101,12 +103,16 @@ namespace WebApi.ServiceModel.Wms
             int Result = -1;
             try
             {
+                List<Impm1> impm1s;
                 using (var db = DbConnectionFactory.OpenDbConnection())
                 {
                     string strSql = "Select Impm1.*,Impr1.PackingPackageSize,Impr1.WholePackageSize " +
                                 "From Impm1 Join Impr1 On Impm1.ProductTrxNo = Impr1.TrxNo " +
                                 "Where Impm1.TrxNo=" + Impm1TrxNoNew;
-                    List<Impm1> impm1s = db.Select<Impm1>(strSql);
+                    impm1s = db.Select<Impm1>(strSql);
+                }
+                using (var db = DbConnectionFactory.OpenDbConnection())
+                {
                     if (impm1s.Count > 0)
                     {
                         switch (impm1s[0].DimensionFlag)
