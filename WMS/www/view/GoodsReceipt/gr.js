@@ -17,13 +17,24 @@ appControllers.controller('GrListCtrl', [
         $scope.Rcbp1 = {};
         $scope.GrnNo = {};
         $scope.Imgr1s = {};
+        $scope.OldBusinessPartyName = '';
+        $scope.OldGoodsReceiptNoteNo = '';
         $scope.refreshRcbp1 = function (BusinessPartyName) {
             if (is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)) {
                 var objUri = ApiService.Uri(true, '/api/wms/rcbp1');
                 objUri.addSearch('BusinessPartyName', BusinessPartyName);
                 ApiService.Get(objUri, false).then(function success(result) {
                     $scope.Rcbp1s = result.data.results;
+                    if ($scope.Rcbp1s.length > 0 && $scope.Rcbp1s[0].BusinessPartyName.toUpperCase() === BusinessPartyName.toUpperCase()) {
+                        $scope.Rcbp1.selected = $scope.Rcbp1s[0];
+                        if (BusinessPartyName.length > 1 && BusinessPartyName.length != $scope.OldBusinessPartyName.length - 1 && BusinessPartyName.length != $scope.OldBusinessPartyName.length + 1) {
+                            $scope.ShowImgr1($scope.Rcbp1.selected.BusinessPartyCode);
+                        }
+                    }
                 });
+                $scope.OldBusinessPartyName = BusinessPartyName;
+            } else {
+                $scope.OldBusinessPartyName = '';
             }
         };
         $scope.refreshGrnNos = function (Grn) {
@@ -32,7 +43,17 @@ appControllers.controller('GrListCtrl', [
                 objUri.addSearch('GoodsReceiptNoteNo', Grn);
                 ApiService.Get(objUri, false).then(function success(result) {
                     $scope.GrnNos = result.data.results;
+                    if ($scope.GrnNos.length > 0 && $scope.GrnNos[0].GoodsReceiptNoteNo.toUpperCase() === Grn.toUpperCase()) {
+                        $scope.GrnNo.selected = $scope.GrnNos[0];
+                        if (Grn.length > 1 && Grn.length != $scope.OldGoodsReceiptNoteNo.length - 1 && Grn.length != $scope.OldGoodsReceiptNoteNo.length + 1) {
+                            $scope.GoToDetail($scope.GrnNo.selected);
+                        }
+                    }
                 });
+                 $scope.OldGoodsReceiptNoteNo=Grn;
+            }
+            else {
+              $scope.OldGoodsReceiptNoteNo='';
             }
         };
         $scope.ShowImgr1 = function (Customer) {
@@ -64,7 +85,7 @@ appControllers.controller('GrListCtrl', [
             }
         };
         $scope.returnMain = function () {
-          // SqlService.Delete('Imgr2_Receipt').then(function (res) {});
+            // SqlService.Delete('Imgr2_Receipt').then(function (res) {});
             $state.go('index.main', {}, {
                 reload: true
             });
@@ -169,9 +190,9 @@ appControllers.controller('GrDetailCtrl', [
                     ProductCode: imgr2.ProductCode,
                     ProductDescription: imgr2.ProductDescription
                 };
-                if (is.equal(imgr2.SerialNoFlag,'Y')){
+                if (is.equal(imgr2.SerialNoFlag, 'Y')) {
                     $('#txt-sn').attr('readonly', false);
-                }else{
+                } else {
                     $('#txt-sn').attr('readonly', true);
                 }
                 $scope.Detail.Imgr2.CustBatchNo = imgr2.UserDefine1;
